@@ -8,18 +8,24 @@ using System.ComponentModel.Composition;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Media;
+using TeamsManifestExtension.ContentTypeDefinitions;
 
 namespace TeamsManifestExtension.Completion
 {
 	[Export(typeof(IJsonCompletionListProvider))]
 	[Name("ManifestCompletionListProvider_Color")]
-	partial class ManifestCompletionListProvider_Color : IJsonCompletionListProvider
+	internal class ManifestCompletionListProvider_Color : IJsonCompletionListProvider
 	{
 		public JsonCompletionContextType ContextType => JsonCompletionContextType.PropertyValue;
 
 		public IEnumerable<JsonCompletionEntry> GetListEntries(JsonCompletionContext context)
 		{
-			var property = (MemberNode) context.ContextNode;
+			if (!context.Snapshot.ContentType.IsOfType(Constants.ManifestContentTypeName))
+				return Enumerable.Empty<JsonCompletionEntry>();
+
+			if (!(context.ContextNode is MemberNode property))
+				return Enumerable.Empty<JsonCompletionEntry>();
+
 			var propertyName = property.Name.GetCanonicalizedText();
 			var completionSession = (ICompletionSession)context.Session;
 
@@ -37,7 +43,7 @@ namespace TeamsManifestExtension.Completion
 			var colorsType = typeof(Colors);
 			var colorsAndNames = colorsType.GetStaticPropertyNamesAndValues<Color>();
 
-			return colorsAndNames.Select(cn => GetColorCompletionEntry(cn.Name, cn.Value, completionSession));
+			return colorsAndNames.Select(cn => GetColorCompletionEntry(cn.name, cn.value, completionSession));
 		}
 
 		private JsonCompletionEntry GetColorCompletionEntry(string name, Color color, ICompletionSession completionSession)
@@ -62,21 +68,14 @@ namespace TeamsManifestExtension.Completion
 
 	public static class TypeUtilities
 	{
-		public class PropertyNameAndValue<T>
-		{
-			public string Name { get; set; }
-			public T Value { get; set; }
-		}
-
-
-		public static IEnumerable<PropertyNameAndValue<T>> GetStaticPropertyNamesAndValues<T>(this Type type)
+		public static IEnumerable<(string name, T value)> GetStaticPropertyNamesAndValues<T>(this Type type)
 		{
 			var properties = type.GetProperties(BindingFlags.Static | BindingFlags.Public).Where(p => p.PropertyType == typeof(T));
 			return properties.Select(p =>
 			{
 				var name = p.Name;
 				var value = (T)p.GetValue(null);
-				return new PropertyNameAndValue<T> { Name = name, Value = value };
+				return (name, value);
 			});
 		}
 

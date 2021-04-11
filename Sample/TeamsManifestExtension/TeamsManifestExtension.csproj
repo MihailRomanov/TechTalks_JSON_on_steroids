@@ -52,6 +52,8 @@
     <Compile Include="Completion\ManifestCompletionListProvider_IconFile.cs" />
     <Compile Include="Completion\ManifestCompletionListProvider_IconFile_New.cs" />
     <Compile Include="Completion\ManifestCompletionListProvider_VersionAndId.cs" />
+    <Compile Include="ContentTypeDefinitions\Constants.cs" />
+    <Compile Include="ContentTypeDefinitions\TeamsManifestContentTypeDefinition.cs" />
     <Compile Include="MarkText\IconFileNameFormatDefinition.cs" />
     <Compile Include="MarkText\IconFileNameTaggerProvider.cs" />
     <Compile Include="NavigationMargin\NavigationMargin.cs" />

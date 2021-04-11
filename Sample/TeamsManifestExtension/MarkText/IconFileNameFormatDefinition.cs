@@ -6,7 +6,7 @@ using System.Windows.Media;
 
 namespace TeamsManifestExtension.MarkText
 {
-    [Export(typeof(EditorFormatDefinition))]
+	[Export(typeof(EditorFormatDefinition))]
 	[Name(IconFileNameDefinition)]
 	[UserVisible(true)]
 	class IconFileNameFormatDefinition : MarkerFormatDefinition

@@ -1,13 +1,12 @@
-﻿using EnvDTE;
-using EnvDTE80;
-using Microsoft.VisualStudio.Language.Intellisense;
-using Microsoft.VisualStudio.Shell;
+﻿using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.WebTools.Languages.Json.Editor.Completion;
 using Microsoft.WebTools.Languages.Json.Parser.Nodes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.Linq;
+using TeamsManifestExtension.ContentTypeDefinitions;
 
 namespace TeamsManifestExtension.Completion
 {
@@ -15,18 +14,18 @@ namespace TeamsManifestExtension.Completion
 	[Name("ManifestCompletionListProvider_VersionAndId")]
 	internal class ManifestCompletionListProvider_VersionAndId : IJsonCompletionListProvider
 	{
-		[Import]
-		SVsServiceProvider serviceProvider = null;
-
 		public JsonCompletionContextType ContextType => JsonCompletionContextType.PropertyValue;
 
 		public IEnumerable<JsonCompletionEntry> GetListEntries(JsonCompletionContext context)
 		{
-			var property = (MemberNode) context.ContextNode;
+			if (!context.Snapshot.ContentType.IsOfType(Constants.ManifestContentTypeName))
+				return Enumerable.Empty<JsonCompletionEntry>();
+
+			if (!(context.ContextNode is MemberNode property))
+				return Enumerable.Empty<JsonCompletionEntry>();
+
 			var propertyName = property.Name.GetCanonicalizedText();
 			var completionSession = (ICompletionSession)context.Session;
-
-			var dte = (DTE2)serviceProvider.GetService(typeof(DTE));
 
 			switch (propertyName)
 			{
@@ -36,13 +35,14 @@ namespace TeamsManifestExtension.Completion
 					};
 
 				case "id":
+					var newGuid = Guid.NewGuid().ToString("D");
 					return new JsonCompletionEntry[] {
-						new JsonCompletionEntry("New id...", $"\"{Guid.NewGuid().ToString("D")}\"", "Generate new GUID",
-						null, "", false, completionSession)
+						new JsonCompletionEntry(
+							"New id...", $"\"{newGuid}\"", "Generate new GUID", null, "", false, completionSession)
 					};
 			}
 
-			return new JsonCompletionEntry[0];
+			return Enumerable.Empty<JsonCompletionEntry>();
 		}
 
 	}

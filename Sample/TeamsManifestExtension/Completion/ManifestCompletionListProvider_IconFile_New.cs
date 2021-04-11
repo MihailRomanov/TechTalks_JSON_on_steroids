@@ -23,7 +23,12 @@ namespace TeamsManifestExtension.Completion
 
 		public IEnumerable<JsonCompletionEntry> GetListEntries(JsonCompletionContext context)
 		{
-			var property = (MemberNode)context.ContextNode;
+			if (!context.Snapshot.ContentType.IsOfType(ContentTypeDefinitions.Constants.ManifestContentTypeName))
+				return Enumerable.Empty<JsonCompletionEntry>();
+
+			if (!(context.ContextNode is MemberNode property))
+				return Enumerable.Empty<JsonCompletionEntry>();
+
 			var propertyName = property.Name.GetCanonicalizedText();
 			var completionSession = (ICompletionSession)context.Session;
 
@@ -36,7 +41,7 @@ namespace TeamsManifestExtension.Completion
 					return new JsonCompletionEntry[] { new NewFileCompletionEntry(completionSession, dte) };
 			}
 
-			return new JsonCompletionEntry[0];
+			return Enumerable.Empty<JsonCompletionEntry>();
 		}
 
 		internal class NewFileCompletionEntry : JsonCompletionEntry

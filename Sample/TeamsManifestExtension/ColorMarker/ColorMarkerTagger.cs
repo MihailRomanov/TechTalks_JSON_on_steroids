@@ -9,12 +9,13 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Globalization;
 using System.Windows.Media;
+using TeamsManifestExtension.ContentTypeDefinitions;
 
 namespace TeamsManifestExtension.ColorMarker
 {
 	[Export(typeof(ITaggerProvider))]
 	[TagType(typeof(ColorMarkerTag))]
-	[ContentType("json")]
+	[ContentType(Constants.ManifestContentTypeName)]
 	internal class TaggerProvider : ITaggerProvider
 	{
 		public ITagger<T> CreateTagger<T>(ITextBuffer buffer) where T : ITag

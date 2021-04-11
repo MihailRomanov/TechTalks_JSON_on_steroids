@@ -6,11 +6,12 @@ using System.ComponentModel.Composition;
 using System.Linq;
 using System.Windows.Controls;
 using System.Windows.Media;
+using TeamsManifestExtension.ContentTypeDefinitions;
 
 namespace TeamsManifestExtension.ColorMarker
 {
 	[Export(typeof(IWpfTextViewCreationListener))]
-	[ContentType("json")]
+	[ContentType(Constants.ManifestContentTypeName)]
 	[TextViewRole(PredefinedTextViewRoles.Document)]
 	class ColorMarkerTextViewCreationListener : IWpfTextViewCreationListener
 	{

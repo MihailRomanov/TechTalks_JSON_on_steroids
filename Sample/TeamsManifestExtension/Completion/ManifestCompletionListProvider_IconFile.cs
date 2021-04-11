@@ -28,7 +28,12 @@ namespace TeamsManifestExtension.Completion
 
 		public IEnumerable<JsonCompletionEntry> GetListEntries(JsonCompletionContext context)
 		{
-			var property = (MemberNode)context.ContextNode;
+			if (!context.Snapshot.ContentType.IsOfType(ContentTypeDefinitions.Constants.ManifestContentTypeName))
+				return Enumerable.Empty<JsonCompletionEntry>();
+
+			if (!(context.ContextNode is MemberNode property))
+				return Enumerable.Empty<JsonCompletionEntry>();
+
 			var propertyName = property.UnquotedNameText;
 			var completionSession = (ICompletionSession)context.Session;
 

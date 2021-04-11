@@ -7,12 +7,13 @@ using Microsoft.WebTools.Languages.Shared.Parser;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using TeamsManifestExtension.ContentTypeDefinitions;
 
 namespace TeamsManifestExtension.MarkText
 {
-    [Export(typeof(ITaggerProvider))]
+	[Export(typeof(ITaggerProvider))]
 	[TagType(typeof(IconFileNameMarkerTag))]
-	[ContentType("json")]
+	[ContentType(Constants.ManifestContentTypeName)]
 	class IconFileNameTaggerProvider : ITaggerProvider
 	{
 		public ITagger<T> CreateTagger<T>(ITextBuffer buffer) where T : ITag

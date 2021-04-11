@@ -1,16 +1,12 @@
 ﻿using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.Composition;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using TeamsManifestExtension.ContentTypeDefinitions;
 
 namespace TeamsManifestExtension.NavigationMargin
 {
 	[Export(typeof(IWpfTextViewMarginProvider))]
-	[ContentType("json")]
+	[ContentType(Constants.ManifestContentTypeName)]
 	[TextViewRole(PredefinedTextViewRoles.Document)]
 	[MarginContainer(PredefinedMarginNames.Top)]
 	[Name("NavigationMarginProvider")]
