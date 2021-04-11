@@ -1,7 +1,7 @@
-﻿using Microsoft.JSON.Core.Parser.TreeItems;
-using Microsoft.JSON.Editor.Completion;
-using Microsoft.VisualStudio.Language.Intellisense;
+﻿using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Utilities;
+using Microsoft.WebTools.Languages.Json.Editor.Completion;
+using Microsoft.WebTools.Languages.Json.Parser.Nodes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
@@ -11,16 +11,16 @@ using System.Windows.Media;
 
 namespace TeamsManifestExtension.Completion
 {
-	[Export(typeof(IJSONCompletionListProvider))]
+	[Export(typeof(IJsonCompletionListProvider))]
 	[Name("ManifestCompletionListProvider_Color")]
-	partial class ManifestCompletionListProvider_Color : IJSONCompletionListProvider
+	partial class ManifestCompletionListProvider_Color : IJsonCompletionListProvider
 	{
-		public JSONCompletionContextType ContextType => JSONCompletionContextType.PropertyValue;
+		public JsonCompletionContextType ContextType => JsonCompletionContextType.PropertyValue;
 
-		public IEnumerable<JSONCompletionEntry> GetListEntries(JSONCompletionContext context)
+		public IEnumerable<JsonCompletionEntry> GetListEntries(JsonCompletionContext context)
 		{
-			var property = (JSONMember)context.ContextItem;
-			var propertyName = property.CanonicalizedNameText;
+			var property = (MemberNode) context.ContextNode;
+			var propertyName = property.Name.GetCanonicalizedText();
 			var completionSession = (ICompletionSession)context.Session;
 
 			switch (propertyName)
@@ -29,10 +29,10 @@ namespace TeamsManifestExtension.Completion
 					return GetColorCompletionList(completionSession);
 			}
 
-			return new JSONCompletionEntry[0];
+			return new JsonCompletionEntry[0];
 		}
 
-		private IEnumerable<JSONCompletionEntry> GetColorCompletionList(ICompletionSession completionSession)
+		private IEnumerable<JsonCompletionEntry> GetColorCompletionList(ICompletionSession completionSession)
 		{
 			var colorsType = typeof(Colors);
 			var colorsAndNames = colorsType.GetStaticPropertyNamesAndValues<Color>();
@@ -40,7 +40,7 @@ namespace TeamsManifestExtension.Completion
 			return colorsAndNames.Select(cn => GetColorCompletionEntry(cn.Name, cn.Value, completionSession));
 		}
 
-		private JSONCompletionEntry GetColorCompletionEntry(string name, Color color, ICompletionSession completionSession)
+		private JsonCompletionEntry GetColorCompletionEntry(string name, Color color, ICompletionSession completionSession)
 		{
 			var glyph = new DrawingImage
 			{
@@ -53,11 +53,11 @@ namespace TeamsManifestExtension.Completion
 
 			var colorValue = $"#{color.R:X2}{color.G:X2}{color.B:X2}";
 
-			return new JSONCompletionEntry($"{name} ({colorValue})", $"\"{colorValue}\"", $"Color {name} - {colorValue}", 
+			return new JsonCompletionEntry($"{name} ({colorValue})", $"\"{colorValue}\"", $"Color {name} - {colorValue}",
 				glyph, "", false, completionSession);
 		}
 
-		
+
 	}
 
 	public static class TypeUtilities

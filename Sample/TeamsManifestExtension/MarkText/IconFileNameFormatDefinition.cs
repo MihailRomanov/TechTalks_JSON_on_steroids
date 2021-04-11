@@ -1,17 +1,12 @@
 ﻿using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.Utilities;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.Composition;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Media;
 
 namespace TeamsManifestExtension.MarkText
 {
-	[Export(typeof(EditorFormatDefinition))]
+    [Export(typeof(EditorFormatDefinition))]
 	[Name(IconFileNameDefinition)]
 	[UserVisible(true)]
 	class IconFileNameFormatDefinition : MarkerFormatDefinition
@@ -30,7 +25,7 @@ namespace TeamsManifestExtension.MarkText
 
 	class IconFileNameMarkerTag : TextMarkerTag
 	{
-		public IconFileNameMarkerTag() 
+		public IconFileNameMarkerTag()
 			: base(IconFileNameFormatDefinition.IconFileNameDefinition)
 		{
 		}

@@ -1,10 +1,10 @@
 ﻿using EnvDTE;
 using EnvDTE80;
-using Microsoft.JSON.Core.Parser.TreeItems;
-using Microsoft.JSON.Editor.Completion;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Utilities;
+using Microsoft.WebTools.Languages.Json.Editor.Completion;
+using Microsoft.WebTools.Languages.Json.Parser.Nodes;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.IO;
@@ -12,9 +12,9 @@ using System.Linq;
 
 namespace TeamsManifestExtension.Completion
 {
-	[Export(typeof(IJSONCompletionListProvider))]
+	[Export(typeof(IJsonCompletionListProvider))]
 	[Name("ManifestCompletionListProvider_IconFile")]
-	internal class ManifestCompletionListProvider_IconFile : IJSONCompletionListProvider
+	internal class ManifestCompletionListProvider_IconFile : IJsonCompletionListProvider
 	{
 		private readonly string[] iconExtension = { ".png", ".jpg", ".gif" };
 
@@ -24,27 +24,27 @@ namespace TeamsManifestExtension.Completion
 		[Import]
 		private IGlyphService glyphService = null;
 
-		public JSONCompletionContextType ContextType => JSONCompletionContextType.PropertyValue;
+		public JsonCompletionContextType ContextType => JsonCompletionContextType.PropertyValue;
 
-		public IEnumerable<JSONCompletionEntry> GetListEntries(JSONCompletionContext context)
+		public IEnumerable<JsonCompletionEntry> GetListEntries(JsonCompletionContext context)
 		{
-			var property = (JSONMember)context.ContextItem;
-			var propertyName = property.CanonicalizedNameText;
+			var property = (MemberNode)context.ContextNode;
+			var propertyName = property.UnquotedNameText;
 			var completionSession = (ICompletionSession)context.Session;
 
 			var dte = (DTE2)serviceProvider.GetService(typeof(DTE));
 
 			switch (propertyName)
-			{				
+			{
 				case "color":
 				case "outline":
 					return GetIconFileCompletionList(dte, completionSession);
 			}
 
-			return new JSONCompletionEntry[0];
+			return new JsonCompletionEntry[0];
 		}
 
-		private IEnumerable<JSONCompletionEntry> GetIconFileCompletionList(DTE2 dte, ICompletionSession session)
+		private IEnumerable<JsonCompletionEntry> GetIconFileCompletionList(DTE2 dte, ICompletionSession session)
 		{
 			var currentProject = dte.ActiveDocument.ProjectItem.ContainingProject;
 			var rootProjectItems = currentProject.ProjectItems.OfType<ProjectItem>();
@@ -55,15 +55,15 @@ namespace TeamsManifestExtension.Completion
 			var glyph = glyphService.GetGlyph(StandardGlyphGroup.GlyphGroupField, StandardGlyphItem.GlyphItemPublic);
 
 			return iconNames.Select(
-					iconName => new JSONCompletionEntry(iconName, '"' + iconName + '"', "Icon", glyph, "", false, session)
+					iconName => new JsonCompletionEntry(iconName, '"' + iconName + '"', "Icon", glyph, "", false, session)
 				);
 
 		}
 
 		private IEnumerable<string> GetProjectItemNamesWithFolderPath(string folderPrefix, ProjectItem projectItem)
 		{
-			var itemFullName = string.IsNullOrEmpty(folderPrefix) ? 
-				projectItem.Name 
+			var itemFullName = string.IsNullOrEmpty(folderPrefix) ?
+				projectItem.Name
 				: folderPrefix + "/" + projectItem.Name;
 
 			if (projectItem.ProjectItems.Count <= 0)
