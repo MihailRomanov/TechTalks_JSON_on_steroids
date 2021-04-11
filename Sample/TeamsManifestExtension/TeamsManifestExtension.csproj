@@ -76,29 +76,21 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.WebTools.Languages.Css">
-      <HintPath>..\Libs\Microsoft.WebTools.Languages.Css.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.WebTools.Languages.Css.Editor">
-      <HintPath>..\Libs\Microsoft.WebTools.Languages.Css.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.WebTools.Languages.Html">
-      <HintPath>..\Libs\Microsoft.WebTools.Languages.Html.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.WebTools.Languages.Html.Editor">
-      <HintPath>..\Libs\Microsoft.WebTools.Languages.Html.Editor.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.WebTools.Languages.Json">
       <HintPath>..\Libs\Microsoft.WebTools.Languages.Json.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.WebTools.Languages.Json.Editor">
       <HintPath>..\Libs\Microsoft.WebTools.Languages.Json.Editor.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.WebTools.Languages.Shared">
       <HintPath>..\Libs\Microsoft.WebTools.Languages.Shared.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.WebTools.Languages.Shared.Editor">
       <HintPath>..\Libs\Microsoft.WebTools.Languages.Shared.Editor.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
