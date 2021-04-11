@@ -6,8 +6,8 @@ namespace TeamsManifestExtension.NavigationMargin
 {
 	class NavigationMargin : IWpfTextViewMargin
 	{
-		StackPanel navigationPanel;
-		private IWpfTextView textView;
+		readonly StackPanel navigationPanel;
+		readonly IWpfTextView textView;
 
 		public NavigationMargin(IWpfTextView textView)
 		{

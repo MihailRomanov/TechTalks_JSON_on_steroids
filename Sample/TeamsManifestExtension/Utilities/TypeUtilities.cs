@@ -9,15 +9,11 @@ namespace TeamsManifestExtension.Utilities
 	{
 		public static IEnumerable<(string name, T value)> GetStaticPropertyNamesAndValues<T>(this Type type)
 		{
-			var properties = type.GetProperties(BindingFlags.Static | BindingFlags.Public).Where(p => p.PropertyType == typeof(T));
-			return properties.Select(p =>
-			{
-				var name = p.Name;
-				var value = (T)p.GetValue(null);
-				return (name, value);
-			});
-		}
+			var properties = type.GetProperties(BindingFlags.Static | BindingFlags.Public)
+				.Where(p => p.PropertyType == typeof(T));
 
+			return properties.Select(p => (name: p.Name, value: (T)p.GetValue(null)));
+		}
 	}
 
 }

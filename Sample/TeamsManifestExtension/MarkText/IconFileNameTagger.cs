@@ -29,9 +29,7 @@ namespace TeamsManifestExtension.MarkText
 			var visitor = new NodeVisitor(
 				(item) =>
 				{
-					var property = item as MemberNode;
-
-					if (property != null)
+					if (item is MemberNode property)
 					{
 						string propertyName = property.Name.GetCanonicalizedText();
 						if ((propertyName == "color" || propertyName == "outline") && (property.Value != null))
