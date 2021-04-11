@@ -16,19 +16,19 @@ namespace TeamsManifestExtension.Completion
 	[Name("ManifestCompletionListProvider_IconFile")]
 	internal class ManifestCompletionListProvider_IconFile : IJsonCompletionListProvider
 	{
-		private readonly string[] iconExtension = { ".png", ".jpg", ".gif" };
+		private readonly string[] IconExtensions = { ".png", ".jpg", ".gif" };
 
 		[Import]
-		SVsServiceProvider serviceProvider = null;
+		SVsServiceProvider ServiceProvider { get; set; }
 
 		[Import]
-		private IGlyphService glyphService = null;
+		private IGlyphService GlyphService { get; set; }
 
 		public JsonCompletionContextType ContextType => JsonCompletionContextType.PropertyValue;
 
 		public IEnumerable<JsonCompletionEntry> GetListEntries(JsonCompletionContext context)
 		{
-			if (!context.Snapshot.ContentType.IsOfType(ContentTypeDefinitions.Constants.ManifestContentTypeName))
+			if (!context.Snapshot.ContentType.IsOfType(ContentTypeDefinitions.TeamsManifestContentTypeConstants.ContentTypeName))
 				return Enumerable.Empty<JsonCompletionEntry>();
 
 			if (!(context.ContextNode is MemberNode property))
@@ -37,7 +37,7 @@ namespace TeamsManifestExtension.Completion
 			var propertyName = property.UnquotedNameText;
 			var completionSession = (ICompletionSession)context.Session;
 
-			var dte = (DTE2)serviceProvider.GetService(typeof(DTE));
+			var dte = (DTE2)ServiceProvider.GetService(typeof(DTE));
 
 			switch (propertyName)
 			{
@@ -46,7 +46,7 @@ namespace TeamsManifestExtension.Completion
 					return GetIconFileCompletionList(dte, completionSession);
 			}
 
-			return new JsonCompletionEntry[0];
+			return Enumerable.Empty<JsonCompletionEntry>();
 		}
 
 		private IEnumerable<JsonCompletionEntry> GetIconFileCompletionList(DTE2 dte, ICompletionSession session)
@@ -55,9 +55,9 @@ namespace TeamsManifestExtension.Completion
 			var rootProjectItems = currentProject.ProjectItems.OfType<ProjectItem>();
 
 			var expandedProjectItemListNames = rootProjectItems.SelectMany(pi => GetProjectItemNamesWithFolderPath("", pi));
-			var iconNames = expandedProjectItemListNames.Where(piName => iconExtension.Contains(Path.GetExtension(piName)));
+			var iconNames = expandedProjectItemListNames.Where(piName => IconExtensions.Contains(Path.GetExtension(piName)));
 
-			var glyph = glyphService.GetGlyph(StandardGlyphGroup.GlyphGroupField, StandardGlyphItem.GlyphItemPublic);
+			var glyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphGroupField, StandardGlyphItem.GlyphItemPublic);
 
 			return iconNames.Select(
 					iconName => new JsonCompletionEntry(iconName, '"' + iconName + '"', "Icon", glyph, "", false, session)

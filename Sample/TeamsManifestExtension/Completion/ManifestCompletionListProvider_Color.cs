@@ -2,13 +2,12 @@
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.WebTools.Languages.Json.Editor.Completion;
 using Microsoft.WebTools.Languages.Json.Parser.Nodes;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
-using System.Reflection;
 using System.Windows.Media;
 using TeamsManifestExtension.ContentTypeDefinitions;
+using TeamsManifestExtension.Utilities;
 
 namespace TeamsManifestExtension.Completion
 {
@@ -20,7 +19,7 @@ namespace TeamsManifestExtension.Completion
 
 		public IEnumerable<JsonCompletionEntry> GetListEntries(JsonCompletionContext context)
 		{
-			if (!context.Snapshot.ContentType.IsOfType(Constants.ManifestContentTypeName))
+			if (!context.Snapshot.ContentType.IsOfType(TeamsManifestContentTypeConstants.ContentTypeName))
 				return Enumerable.Empty<JsonCompletionEntry>();
 
 			if (!(context.ContextNode is MemberNode property))
@@ -35,7 +34,7 @@ namespace TeamsManifestExtension.Completion
 					return GetColorCompletionList(completionSession);
 			}
 
-			return new JsonCompletionEntry[0];
+			return Enumerable.Empty<JsonCompletionEntry>();
 		}
 
 		private IEnumerable<JsonCompletionEntry> GetColorCompletionList(ICompletionSession completionSession)
@@ -62,23 +61,5 @@ namespace TeamsManifestExtension.Completion
 			return new JsonCompletionEntry($"{name} ({colorValue})", $"\"{colorValue}\"", $"Color {name} - {colorValue}",
 				glyph, "", false, completionSession);
 		}
-
-
 	}
-
-	public static class TypeUtilities
-	{
-		public static IEnumerable<(string name, T value)> GetStaticPropertyNamesAndValues<T>(this Type type)
-		{
-			var properties = type.GetProperties(BindingFlags.Static | BindingFlags.Public).Where(p => p.PropertyType == typeof(T));
-			return properties.Select(p =>
-			{
-				var name = p.Name;
-				var value = (T)p.GetValue(null);
-				return (name, value);
-			});
-		}
-
-	}
-
 }

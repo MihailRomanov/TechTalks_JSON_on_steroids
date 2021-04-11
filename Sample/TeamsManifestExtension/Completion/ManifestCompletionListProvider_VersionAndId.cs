@@ -18,7 +18,7 @@ namespace TeamsManifestExtension.Completion
 
 		public IEnumerable<JsonCompletionEntry> GetListEntries(JsonCompletionContext context)
 		{
-			if (!context.Snapshot.ContentType.IsOfType(Constants.ManifestContentTypeName))
+			if (!context.Snapshot.ContentType.IsOfType(TeamsManifestContentTypeConstants.ContentTypeName))
 				return Enumerable.Empty<JsonCompletionEntry>();
 
 			if (!(context.ContextNode is MemberNode property))

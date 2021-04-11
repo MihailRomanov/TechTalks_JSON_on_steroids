@@ -1,5 +1,4 @@
 ﻿using Microsoft.VisualStudio.Text.Classification;
-using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.Utilities;
 using System.ComponentModel.Composition;
 using System.Windows.Media;
@@ -7,11 +6,10 @@ using System.Windows.Media;
 namespace TeamsManifestExtension.MarkText
 {
 	[Export(typeof(EditorFormatDefinition))]
-	[Name(IconFileNameDefinition)]
+	[Name(IconFileNameConstants.IconFileNameDefinitionName)]
 	[UserVisible(true)]
 	class IconFileNameFormatDefinition : MarkerFormatDefinition
 	{
-		internal const string IconFileNameDefinition = "IconFileNameFormatDefinition";
 
 		protected IconFileNameFormatDefinition()
 		{
@@ -20,14 +18,6 @@ namespace TeamsManifestExtension.MarkText
 			this.ZOrder = 5;
 
 			this.DisplayName = "_Teams Icon file name";
-		}
-	}
-
-	class IconFileNameMarkerTag : TextMarkerTag
-	{
-		public IconFileNameMarkerTag()
-			: base(IconFileNameFormatDefinition.IconFileNameDefinition)
-		{
 		}
 	}
 }

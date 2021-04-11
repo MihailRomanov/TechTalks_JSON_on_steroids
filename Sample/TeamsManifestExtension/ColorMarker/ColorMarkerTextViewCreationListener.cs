@@ -11,19 +11,13 @@ using TeamsManifestExtension.ContentTypeDefinitions;
 namespace TeamsManifestExtension.ColorMarker
 {
 	[Export(typeof(IWpfTextViewCreationListener))]
-	[ContentType(Constants.ManifestContentTypeName)]
+	[ContentType(TeamsManifestContentTypeConstants.ContentTypeName)]
 	[TextViewRole(PredefinedTextViewRoles.Document)]
 	class ColorMarkerTextViewCreationListener : IWpfTextViewCreationListener
 	{
-		private const string ColorMarkerLayerName = "ColorMarkerAdornmentLayer";
-
-		[Export(typeof(AdornmentLayerDefinition))]
-		[Name(ColorMarkerLayerName)]
-		[Order(Before = PredefinedAdornmentLayers.Selection, After = PredefinedAdornmentLayers.Text)]
-		AdornmentLayerDefinition adornmentLayerDefinition;
 
 		[Import]
-		IBufferTagAggregatorFactoryService tagAggregatorFactoryService = null;
+		IBufferTagAggregatorFactoryService TagAggregatorFactoryService { get; set; }
 
 		IAdornmentLayer layer;
 		IWpfTextView textView;
@@ -31,16 +25,16 @@ namespace TeamsManifestExtension.ColorMarker
 
 		public void TextViewCreated(IWpfTextView textView)
 		{
-			this.layer = textView.GetAdornmentLayer(ColorMarkerLayerName);
+			layer = textView.GetAdornmentLayer(ColorMarkerConstants.ColorMarkerLayerName);
 			this.textView = textView;
-			this.textBuffer = textView.TextBuffer;
+			textBuffer = textView.TextBuffer;
 
 			textView.LayoutChanged += TextView_LayoutChanged;
 		}
 
 		private void TextView_LayoutChanged(object sender, TextViewLayoutChangedEventArgs e)
 		{
-			var tagAggegator = tagAggregatorFactoryService.CreateTagAggregator<ColorMarkerTag>(textBuffer);
+			var tagAggegator = TagAggregatorFactoryService.CreateTagAggregator<ColorMarkerTag>(textBuffer);
 			var tags = tagAggegator.GetTags(new SnapshotSpan(e.NewSnapshot, 0, e.NewSnapshot.Length));
 
 			layer.RemoveAllAdornments();
@@ -48,7 +42,7 @@ namespace TeamsManifestExtension.ColorMarker
 			foreach (var tag in tags)
 			{
 				var span = tag.Span.GetSpans(textBuffer).First();
-				var markerGeometry = this.textView.TextViewLines.GetMarkerGeometry(span);
+				var markerGeometry = textView.TextViewLines.GetMarkerGeometry(span);
 
 				if (markerGeometry != null)
 				{

@@ -6,7 +6,7 @@ using TeamsManifestExtension.ContentTypeDefinitions;
 namespace TeamsManifestExtension.NavigationMargin
 {
 	[Export(typeof(IWpfTextViewMarginProvider))]
-	[ContentType(Constants.ManifestContentTypeName)]
+	[ContentType(TeamsManifestContentTypeConstants.ContentTypeName)]
 	[TextViewRole(PredefinedTextViewRoles.Document)]
 	[MarginContainer(PredefinedMarginNames.Top)]
 	[Name("NavigationMarginProvider")]

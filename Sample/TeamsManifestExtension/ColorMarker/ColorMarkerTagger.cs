@@ -15,7 +15,7 @@ namespace TeamsManifestExtension.ColorMarker
 {
 	[Export(typeof(ITaggerProvider))]
 	[TagType(typeof(ColorMarkerTag))]
-	[ContentType(Constants.ManifestContentTypeName)]
+	[ContentType(TeamsManifestContentTypeConstants.ContentTypeName)]
 	internal class TaggerProvider : ITaggerProvider
 	{
 		public ITagger<T> CreateTagger<T>(ITextBuffer buffer) where T : ITag
