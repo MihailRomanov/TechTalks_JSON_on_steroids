@@ -1,21 +1,21 @@
-﻿using Microsoft.CSS.Core.Parser;
-using Microsoft.JSON.Core.Parser;
-using Microsoft.JSON.Core.Parser.TreeItems;
-using Microsoft.JSON.Editor.Document;
-using Microsoft.VisualStudio.Text;
+﻿using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.Utilities;
+using Microsoft.WebTools.Languages.Json.Editor.Document;
+using Microsoft.WebTools.Languages.Json.Parser.Nodes;
+using Microsoft.WebTools.Languages.Shared.Parser;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Globalization;
 using System.Windows.Media;
+using TeamsManifestExtension.ContentTypeDefinitions;
 
 namespace TeamsManifestExtension.ColorMarker
 {
 	[Export(typeof(ITaggerProvider))]
 	[TagType(typeof(ColorMarkerTag))]
-	[ContentType("json")]
+	[ContentType(TeamsManifestContentTypeConstants.ContentTypeName)]
 	internal class TaggerProvider : ITaggerProvider
 	{
 		public ITagger<T> CreateTagger<T>(ITextBuffer buffer) where T : ITag
@@ -37,23 +37,23 @@ namespace TeamsManifestExtension.ColorMarker
 
 		public IEnumerable<ITagSpan<ColorMarkerTag>> GetTags(NormalizedSnapshotSpanCollection spans)
 		{
-			var jsonDocument = JSONEditorDocument.TryFromTextBuffer(buffer);
-			var treeRoot = jsonDocument.Tree.JSONDocument;
+			var jsonDocument = JsonEditorDocument.FromTextBuffer(buffer);
+			var treeRoot = jsonDocument.DocumentNode;
 
 			var result = new List<ITagSpan<ColorMarkerTag>>();
 
-			var visitor = new JSONTreeVisitor(
+			var visitor = new NodeVisitor(
 				(item) =>
 				{
-					var property = item as JSONMember;
+					var property = item as MemberNode;
 
 					if (property != null)
 					{
-						string propertyName = property.Name.CanonicalizedText;
+						string propertyName = property.Name.GetCanonicalizedText();
 						if ((propertyName == "accentColor") && (property.Value != null))
 						{
-							var markerSpan = new SnapshotSpan(buffer.CurrentSnapshot, property.Value.Start, property.Value.Length);
-							Color? color = TextToColor(property.Value.Text.Substring(1, property.Value.Text.Length - 2));
+							var markerSpan = new SnapshotSpan(buffer.CurrentSnapshot, property.Value.Start, property.Value.Span.Length);
+							Color? color = TextToColor(property.Value.GetText().Substring(1, property.Value.GetText().Length - 2));
 
 							if (color.HasValue)
 							{
@@ -62,11 +62,11 @@ namespace TeamsManifestExtension.ColorMarker
 								result.Add(tagSpan);
 							}
 
-							return VisitItemResult.SkipChildren;
+							return VisitNodeResult.SkipChildren;
 						}
 					}
 
-					return VisitItemResult.Continue;
+					return VisitNodeResult.Continue;
 				});
 
 			treeRoot.Accept(visitor);

@@ -1,10 +1,10 @@
 ﻿using EnvDTE;
 using EnvDTE80;
-using Microsoft.JSON.Core.Parser.TreeItems;
-using Microsoft.JSON.Editor.Completion;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Utilities;
+using Microsoft.WebTools.Languages.Json.Editor.Completion;
+using Microsoft.WebTools.Languages.Json.Parser.Nodes;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.IO;
@@ -12,58 +12,63 @@ using System.Linq;
 
 namespace TeamsManifestExtension.Completion
 {
-	[Export(typeof(IJSONCompletionListProvider))]
+	[Export(typeof(IJsonCompletionListProvider))]
 	[Name("ManifestCompletionListProvider_IconFile")]
-	internal class ManifestCompletionListProvider_IconFile : IJSONCompletionListProvider
+	internal class ManifestCompletionListProvider_IconFile : IJsonCompletionListProvider
 	{
-		private readonly string[] iconExtension = { ".png", ".jpg", ".gif" };
+		private readonly string[] IconExtensions = { ".png", ".jpg", ".gif" };
 
 		[Import]
-		SVsServiceProvider serviceProvider = null;
+		SVsServiceProvider ServiceProvider { get; set; }
 
 		[Import]
-		private IGlyphService glyphService = null;
+		private IGlyphService GlyphService { get; set; }
 
-		public JSONCompletionContextType ContextType => JSONCompletionContextType.PropertyValue;
+		public JsonCompletionContextType ContextType => JsonCompletionContextType.PropertyValue;
 
-		public IEnumerable<JSONCompletionEntry> GetListEntries(JSONCompletionContext context)
+		public IEnumerable<JsonCompletionEntry> GetListEntries(JsonCompletionContext context)
 		{
-			var property = (JSONMember)context.ContextItem;
-			var propertyName = property.CanonicalizedNameText;
+			if (!context.Snapshot.ContentType.IsOfType(ContentTypeDefinitions.TeamsManifestContentTypeConstants.ContentTypeName))
+				return Enumerable.Empty<JsonCompletionEntry>();
+
+			if (!(context.ContextNode is MemberNode property))
+				return Enumerable.Empty<JsonCompletionEntry>();
+
+			var propertyName = property.UnquotedNameText;
 			var completionSession = (ICompletionSession)context.Session;
 
-			var dte = (DTE2)serviceProvider.GetService(typeof(DTE));
+			var dte = (DTE2)ServiceProvider.GetService(typeof(DTE));
 
 			switch (propertyName)
-			{				
+			{
 				case "color":
 				case "outline":
 					return GetIconFileCompletionList(dte, completionSession);
 			}
 
-			return new JSONCompletionEntry[0];
+			return Enumerable.Empty<JsonCompletionEntry>();
 		}
 
-		private IEnumerable<JSONCompletionEntry> GetIconFileCompletionList(DTE2 dte, ICompletionSession session)
+		private IEnumerable<JsonCompletionEntry> GetIconFileCompletionList(DTE2 dte, ICompletionSession session)
 		{
 			var currentProject = dte.ActiveDocument.ProjectItem.ContainingProject;
 			var rootProjectItems = currentProject.ProjectItems.OfType<ProjectItem>();
 
 			var expandedProjectItemListNames = rootProjectItems.SelectMany(pi => GetProjectItemNamesWithFolderPath("", pi));
-			var iconNames = expandedProjectItemListNames.Where(piName => iconExtension.Contains(Path.GetExtension(piName)));
+			var iconNames = expandedProjectItemListNames.Where(piName => IconExtensions.Contains(Path.GetExtension(piName)));
 
-			var glyph = glyphService.GetGlyph(StandardGlyphGroup.GlyphGroupField, StandardGlyphItem.GlyphItemPublic);
+			var glyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphGroupField, StandardGlyphItem.GlyphItemPublic);
 
 			return iconNames.Select(
-					iconName => new JSONCompletionEntry(iconName, '"' + iconName + '"', "Icon", glyph, "", false, session)
+					iconName => new JsonCompletionEntry(iconName, '"' + iconName + '"', "Icon", glyph, "", false, session)
 				);
 
 		}
 
 		private IEnumerable<string> GetProjectItemNamesWithFolderPath(string folderPrefix, ProjectItem projectItem)
 		{
-			var itemFullName = string.IsNullOrEmpty(folderPrefix) ? 
-				projectItem.Name 
+			var itemFullName = string.IsNullOrEmpty(folderPrefix) ?
+				projectItem.Name
 				: folderPrefix + "/" + projectItem.Name;
 
 			if (projectItem.ProjectItems.Count <= 0)

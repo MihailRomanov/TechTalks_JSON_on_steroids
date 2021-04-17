@@ -1,49 +1,48 @@
-﻿using EnvDTE;
-using EnvDTE80;
-using Microsoft.JSON.Core.Parser.TreeItems;
-using Microsoft.JSON.Editor.Completion;
-using Microsoft.VisualStudio.Language.Intellisense;
-using Microsoft.VisualStudio.Shell;
+﻿using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Utilities;
+using Microsoft.WebTools.Languages.Json.Editor.Completion;
+using Microsoft.WebTools.Languages.Json.Parser.Nodes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
+using TeamsManifestExtension.ContentTypeDefinitions;
 
 namespace TeamsManifestExtension.Completion
 {
-	[Export(typeof(IJSONCompletionListProvider))]
+	[Export(typeof(IJsonCompletionListProvider))]
 	[Name("ManifestCompletionListProvider_VersionAndId")]
-	internal class ManifestCompletionListProvider_VersionAndId : IJSONCompletionListProvider
+	internal class ManifestCompletionListProvider_VersionAndId : IJsonCompletionListProvider
 	{
-		[Import]
-		SVsServiceProvider serviceProvider = null;
-		
-		public JSONCompletionContextType ContextType => JSONCompletionContextType.PropertyValue;
+		public JsonCompletionContextType ContextType => JsonCompletionContextType.PropertyValue;
 
-		public IEnumerable<JSONCompletionEntry> GetListEntries(JSONCompletionContext context)
+		public IEnumerable<JsonCompletionEntry> GetListEntries(JsonCompletionContext context)
 		{
-			var property = (JSONMember)context.ContextItem;
-			var propertyName = property.CanonicalizedNameText;
-			var completionSession = (ICompletionSession)context.Session;
+			if (!context.Snapshot.ContentType.IsOfType(TeamsManifestContentTypeConstants.ContentTypeName))
+				return Enumerable.Empty<JsonCompletionEntry>();
 
-			var dte = (DTE2)serviceProvider.GetService(typeof(DTE));
+			if (!(context.ContextNode is MemberNode property))
+				return Enumerable.Empty<JsonCompletionEntry>();
+
+			var propertyName = property.Name.GetCanonicalizedText();
+			var completionSession = (ICompletionSession)context.Session;
 
 			switch (propertyName)
 			{
 				case "version":
-					return new JSONCompletionEntry[] {
-						new JSONCompletionEntry("1.0", "\"1.0\"", "Version 1.0", null, "", false, completionSession)
+					return new JsonCompletionEntry[] {
+						new JsonCompletionEntry("1.0", "\"1.0\"", "Version 1.0", null, "", false, completionSession)
 					};
 
 				case "id":
-					return new JSONCompletionEntry[] {
-						new JSONCompletionEntry("New id...", $"\"{Guid.NewGuid().ToString("D")}\"", "Generate new GUID", 
-						null, "", false, completionSession)
+					var newGuid = Guid.NewGuid().ToString("D");
+					return new JsonCompletionEntry[] {
+						new JsonCompletionEntry(
+							"New id...", $"\"{newGuid}\"", "Generate new GUID", null, "", false, completionSession)
 					};
 			}
 
-			return new JSONCompletionEntry[0];
+			return Enumerable.Empty<JsonCompletionEntry>();
 		}
 
 	}

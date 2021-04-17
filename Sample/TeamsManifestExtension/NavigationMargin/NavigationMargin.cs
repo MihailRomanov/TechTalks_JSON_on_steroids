@@ -1,9 +1,4 @@
 ﻿using Microsoft.VisualStudio.Text.Editor;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -11,8 +6,8 @@ namespace TeamsManifestExtension.NavigationMargin
 {
 	class NavigationMargin : IWpfTextViewMargin
 	{
-		StackPanel navigationPanel;
-		private IWpfTextView textView;
+		readonly StackPanel navigationPanel;
+		readonly IWpfTextView textView;
 
 		public NavigationMargin(IWpfTextView textView)
 		{
