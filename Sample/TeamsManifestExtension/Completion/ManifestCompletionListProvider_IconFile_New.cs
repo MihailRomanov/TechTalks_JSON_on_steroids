@@ -8,6 +8,7 @@ using Microsoft.WebTools.Languages.Json.Parser.Nodes;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
+using TeamsManifestExtension.ContentTypeDefinitions;
 
 namespace TeamsManifestExtension.Completion
 {
@@ -22,7 +23,7 @@ namespace TeamsManifestExtension.Completion
 
 		public IEnumerable<JsonCompletionEntry> GetListEntries(JsonCompletionContext context)
 		{
-			if (!context.Snapshot.ContentType.IsOfType(ContentTypeDefinitions.TeamsManifestContentTypeConstants.ContentTypeName))
+			if (!context.Snapshot.ContentType.IsOfType(TeamsManifestContentTypeConstants.ContentTypeName))
 				return Enumerable.Empty<JsonCompletionEntry>();
 
 			if (!(context.ContextNode is MemberNode property))

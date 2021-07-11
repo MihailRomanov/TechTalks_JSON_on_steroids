@@ -55,6 +55,7 @@
     <Compile Include="Completion\ManifestCompletionListProvider_IconFile_New.cs" />
     <Compile Include="Completion\ManifestCompletionListProvider_VersionAndId.cs" />
     <Compile Include="Completion\NewFileCompletionEntry.cs" />
+    <Compile Include="ContentTypeDefinitions\NumberedManifestNameProvider.cs" />
     <Compile Include="MarkText\IconFileNameConstants.cs" />
     <Compile Include="MarkText\IconFileNameMarkerTag.cs" />
     <Compile Include="MarkText\IconFileNameTagger.cs" />
