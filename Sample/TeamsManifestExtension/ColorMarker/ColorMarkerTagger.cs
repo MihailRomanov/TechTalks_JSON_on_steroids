@@ -52,7 +52,7 @@ namespace TeamsManifestExtension.ColorMarker
 						string propertyName = property.Name.GetCanonicalizedText();
 						if ((propertyName == "accentColor") && (property.Value != null))
 						{
-							var markerSpan = new SnapshotSpan(buffer.CurrentSnapshot, property.Value.Start, property.Value.Span.Length);
+							var markerSpan = new SnapshotSpan(buffer.CurrentSnapshot, property.Value.Start, 0);
 							Color? color = TextToColor(property.Value.GetText().Substring(1, property.Value.GetText().Length - 2));
 
 							if (color.HasValue)

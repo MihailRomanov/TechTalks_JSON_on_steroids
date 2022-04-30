@@ -2,6 +2,7 @@
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.Utilities;
+using System;
 using System.ComponentModel.Composition;
 using System.Linq;
 using System.Windows.Controls;
@@ -42,28 +43,30 @@ namespace TeamsManifestExtension.ColorMarker
 			foreach (var tag in tags)
 			{
 				var span = tag.Span.GetSpans(textBuffer).First();
-				var markerGeometry = textView.TextViewLines.GetMarkerGeometry(span);
 
-				if (markerGeometry != null)
+				var position = tag.Span.Start.GetPoint(textBuffer, PositionAffinity.Predecessor).Value;
+				var line = textView.GetTextViewLineContainingBufferPosition(position);
+				var bounds = line.GetExtendedCharacterBounds(position.Subtract(1));
+
+				var adormentSize = Math.Min(bounds.Width, bounds.Height);
+
+				var image = new Image
 				{
-
-					var image = new Image
+					Source = new DrawingImage
 					{
-						Source = new DrawingImage
+						Drawing = new GeometryDrawing()
 						{
-							Drawing = new GeometryDrawing()
-							{
-								Geometry = new RectangleGeometry(new System.Windows.Rect(0, 0, 16, 16), 3, 3),
-								Brush = new SolidColorBrush(tag.Tag.Color)
-							}
+							Geometry = new RectangleGeometry(new System.Windows.Rect(0, 0, adormentSize, adormentSize), 3, 3),
+							Brush = new SolidColorBrush(tag.Tag.Color)
 						}
-					};
+					}
+				};
 
-					Canvas.SetLeft(image, markerGeometry.Bounds.Left - 20);
-					Canvas.SetTop(image, markerGeometry.Bounds.Top);
+				Canvas.SetLeft(image, bounds.Left + (bounds.Width - adormentSize) / 2 );
+				Canvas.SetTop(image, bounds.Top + (bounds.Height - adormentSize) / 2);
 
-					layer.AddAdornment(AdornmentPositioningBehavior.TextRelative, span, null, image, null);
-				}
+				layer.AddAdornment(AdornmentPositioningBehavior.TextRelative, span, tag, image, null);
+
 			}
 		}
 	}
