@@ -8,7 +8,7 @@ using System.Collections.Generic;
 
 namespace TeamsManifestExtension.MarkText
 {
-	class IconFileNameTagger : ITagger<IconFileNameMarkerTag>
+	class IconFileNameTagger : ITagger<ITextMarkerTag>
 	{
 		private readonly ITextBuffer buffer;
 
@@ -19,26 +19,33 @@ namespace TeamsManifestExtension.MarkText
 
 		public event EventHandler<SnapshotSpanEventArgs> TagsChanged;
 
-		public IEnumerable<ITagSpan<IconFileNameMarkerTag>> GetTags(NormalizedSnapshotSpanCollection spans)
+		public IEnumerable<ITagSpan<ITextMarkerTag>> GetTags(NormalizedSnapshotSpanCollection spans)
 		{
 			var jsonDocument = JsonEditorDocument.FromTextBuffer(buffer);
 			var treeRoot = jsonDocument.DocumentNode;
 
-			var result = new List<ITagSpan<IconFileNameMarkerTag>>();
+			var result = new List<ITagSpan<ITextMarkerTag>>();
 
 			var visitor = new NodeVisitor(
 				(item) =>
 				{
 					if (item is MemberNode property)
 					{
-						string propertyName = property.Name.GetCanonicalizedText();
-						if ((propertyName == "color" || propertyName == "outline") && (property.Value != null))
+						var propertyName = property.Name?.GetCanonicalizedText() ?? String.Empty;
+						var parentName = property.Parent.FindType<MemberNode>()?.Name.GetCanonicalizedText() ?? String.Empty;
+						var propertyValue = property.Value;
+
+						if ((propertyName == "color" || propertyName == "outline") 
+							&& parentName == "icons" 
+							&& propertyValue != null)
 						{
-							var markerSpan = new SnapshotSpan(buffer.CurrentSnapshot, property.Value.Start, property.Value.Span.Length);
-							var tagSpan = new TagSpan<IconFileNameMarkerTag>(markerSpan, new IconFileNameMarkerTag());
+							var markerSpan = new SnapshotSpan(
+								buffer.CurrentSnapshot, propertyValue.Start, propertyValue.Span.Length);
+
+							var tagSpan = new TagSpan<ITextMarkerTag>(
+								markerSpan, new TextMarkerTag(IconFileNameConstants.IconFileNameDefinitionName));
 
 							result.Add(tagSpan);
-
 							return VisitNodeResult.SkipChildren;
 						}
 					}

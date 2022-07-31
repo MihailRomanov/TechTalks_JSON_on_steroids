@@ -57,7 +57,6 @@
     <Compile Include="Completion\NewFileCompletionEntry.cs" />
     <Compile Include="ContentTypeDefinitions\NumberedManifestNameProvider.cs" />
     <Compile Include="MarkText\IconFileNameConstants.cs" />
-    <Compile Include="MarkText\IconFileNameMarkerTag.cs" />
     <Compile Include="MarkText\IconFileNameTagger.cs" />
     <Compile Include="Utilities\TypeUtilities.cs" />
     <Compile Include="ContentTypeDefinitions\TeamsManifestContentTypeConstants.cs" />

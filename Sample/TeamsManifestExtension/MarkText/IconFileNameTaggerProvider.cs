@@ -7,7 +7,7 @@ using TeamsManifestExtension.ContentTypeDefinitions;
 namespace TeamsManifestExtension.MarkText
 {
 	[Export(typeof(ITaggerProvider))]
-	[TagType(typeof(IconFileNameMarkerTag))]
+	[TagType(typeof(ITextMarkerTag))]
 	[ContentType(TeamsManifestContentTypeConstants.ContentTypeName)]
 	class IconFileNameTaggerProvider : ITaggerProvider
 	{
