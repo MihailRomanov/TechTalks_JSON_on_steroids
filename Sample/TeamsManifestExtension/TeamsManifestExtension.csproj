@@ -55,8 +55,8 @@
     <Compile Include="Completion\ManifestCompletionListProvider_IconFile_New.cs" />
     <Compile Include="Completion\ManifestCompletionListProvider_VersionAndId.cs" />
     <Compile Include="Completion\NewFileCompletionEntry.cs" />
+    <Compile Include="ContentTypeDefinitions\NumberedManifestNameProvider.cs" />
     <Compile Include="MarkText\IconFileNameConstants.cs" />
-    <Compile Include="MarkText\IconFileNameMarkerTag.cs" />
     <Compile Include="MarkText\IconFileNameTagger.cs" />
     <Compile Include="Utilities\TypeUtilities.cs" />
     <Compile Include="ContentTypeDefinitions\TeamsManifestContentTypeConstants.cs" />
@@ -99,8 +99,13 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.VisualStudio.SDK" Version="16.0.206" ExcludeAssets="runtime" />
-    <PackageReference Include="Microsoft.VSSDK.BuildTools" Version="16.8.3038" />
+    <PackageReference Include="Microsoft.VisualStudio.SDK" Version="16.10.31321.278" ExcludeAssets="runtime">
+      <IncludeAssets>compile; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VSSDK.BuildTools" Version="16.11.35">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx" />
