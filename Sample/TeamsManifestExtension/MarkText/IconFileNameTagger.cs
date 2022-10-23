@@ -33,7 +33,7 @@ namespace TeamsManifestExtension.MarkText
 					{
 						var propertyName = property.Name?.GetCanonicalizedText() ?? String.Empty;
 						var parentName = property.Parent?
-							.FindType<MemberNode>()?.Name.GetCanonicalizedText() ?? String.Empty;
+							.FindType<MemberNode>()?.Name?.GetCanonicalizedText() ?? String.Empty;
 						var propertyValue = property.Value;
 
 						if ((propertyName == "color" || propertyName == "outline") 
