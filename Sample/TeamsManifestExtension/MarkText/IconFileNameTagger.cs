@@ -26,13 +26,14 @@ namespace TeamsManifestExtension.MarkText
 
 			var result = new List<ITagSpan<ITextMarkerTag>>();
 
-			var visitor = new NodeVisitor(
+			treeRoot.Accept(new NodeVisitor(
 				(item) =>
 				{
 					if (item is MemberNode property)
 					{
 						var propertyName = property.Name?.GetCanonicalizedText() ?? String.Empty;
-						var parentName = property.Parent.FindType<MemberNode>()?.Name.GetCanonicalizedText() ?? String.Empty;
+						var parentName = property.Parent?
+							.FindType<MemberNode>()?.Name.GetCanonicalizedText() ?? String.Empty;
 						var propertyValue = property.Value;
 
 						if ((propertyName == "color" || propertyName == "outline") 
@@ -51,9 +52,7 @@ namespace TeamsManifestExtension.MarkText
 					}
 
 					return VisitNodeResult.Continue;
-				});
-
-			treeRoot.Accept(visitor);
+				}));
 
 			return result;
 		}
