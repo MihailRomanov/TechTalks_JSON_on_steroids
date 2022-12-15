@@ -77,20 +77,27 @@ namespace TeamsManifestExtension.ColorMarker
 
 		private Color? TextToColor(string text)
 		{
-			if (text.Length != 7)
+			if (text.Length != 7 || text[0] != '#')
 				return null;
 
 			var rText = text.Substring(1, 2);
 			var gText = text.Substring(3, 2);
 			var bText = text.Substring(5, 2);
 
-			return new Color()
+			if (byte.TryParse(rText, NumberStyles.HexNumber, null, out var r)
+				&& byte.TryParse(gText, NumberStyles.HexNumber, null, out var g)
+				&& byte.TryParse(bText, NumberStyles.HexNumber, null, out var b))
 			{
-				A = 0xFF,
-				R = byte.Parse(rText, NumberStyles.HexNumber, null),
-				G = byte.Parse(gText, NumberStyles.HexNumber, null),
-				B = byte.Parse(bText, NumberStyles.HexNumber, null),
-			};
+				return new Color()
+				{
+					A = 0xFF,
+					R = r,
+					G = g,
+					B = b,
+				};
+			}
+
+			return null;
 		}
 	}
 }
